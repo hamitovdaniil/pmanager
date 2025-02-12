@@ -1,0 +1,19 @@
+{
+	"name": "hamitovdaniil/pmanager",
+	"description": "Laravel Eloquent model position manager",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Khamitov Daniil",
+			"email": "hamitovdaniil6@gmail.com"
+		}
+	],
+	"require": {
+		"php": "^7.4 || ^8.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"hamitovdaniil\\PManager\\": "src/"
+		}
+	}
+}

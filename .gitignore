@@ -1,0 +1,9 @@
+.idea
+docker
+vendor
+composer.lock
+.phpunit.result.cache
+.env
+.DS_Store
+docker-compose.yml
+Makefile
