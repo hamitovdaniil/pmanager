@@ -72,9 +72,16 @@ trait PManager
 
         // Начинаем транзакцию
         DB::beginTransaction();
+
         try {
             // Массив для хранения обновлений
             $updates = [];
+
+            // Проверяем, что целевая позиция не равна текущей позиции
+            if ($this->position == $targetPosition) {
+                DB::commit();
+                return;
+            }
 
             // Перебираем все строки
             foreach ($rows as $row) {
@@ -82,13 +89,18 @@ trait PManager
                     // Если нашли текущий объект, обновляем его позицию
                     $updates[] = ['id' => $row->id, 'position' => $targetPosition];
                 } else {
-                    // Для остальных строк обновляем позицию
-                    if ($row->position >= $targetPosition) {
-                        // Перемещаем элементы вниз
-                        $updates[] = ['id' => $row->id, 'position' => $row->position + 1];
-                    } elseif ($row->position < $targetPosition) {
-                        // Перемещаем элементы вверх
-                        $updates[] = ['id' => $row->id, 'position' => $row->position - 1];
+                    if ($targetPosition < $this->position) {
+                        // Если целевая позиция меньше текущей
+                        if ($row->position >= $targetPosition && $row->position < $this->position) {
+                            // Сдвигаем все элементы в пределах диапазона на 1 позицию вниз
+                            $updates[] = ['id' => $row->id, 'position' => $row->position + 1];
+                        }
+                    } else {
+                        // Если целевая позиция больше текущей
+                        if ($row->position <= $targetPosition && $row->position > $this->position) {
+                            // Сдвигаем все элементы в пределах диапазона на 1 позицию вверх
+                            $updates[] = ['id' => $row->id, 'position' => $row->position - 1];
+                        }
                     }
                 }
             }
@@ -113,7 +125,7 @@ trait PManager
     public function updatePosition($id, $position)
     {
         // Обновляем позицию для строки с данным id
-        $row = $this->getById($id);
+        $row = $this->getById($id); // Предположим, что у вас есть метод для получения строки по id
         if ($row) {
             $row->update([$this->fieldName() => $position]);
         }
